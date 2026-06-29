@@ -1,0 +1,45 @@
+KIẾN THỨC CẦN CÓ
+
+1. Kiến thức nền về MRI não
+
+Cần hiểu cấu trúc cơ bản của não trên ảnh MRI, bao gồm chất xám, chất trắng, dịch não tủy, não thất và vỏ não. Dự án liên quan trực tiếp đến lão hóa não, nên cần biết các thay đổi thường gặp theo tuổi như mỏng vỏ não và giãn não thất. Ngoài ra cần nắm các khái niệm về voxel, lát cắt 2D, ảnh 3D, độ phân giải không gian, hướng ảnh và hệ tọa độ trong dữ liệu y sinh.
+
+2. Tiền xử lý ảnh y sinh
+
+Cần nắm các bước tiền xử lý MRI được nhắc trong theme_GenAI.pdf: conform, skull-stripping, alignment và chuẩn hóa dữ liệu. Điểm cốt lõi của dự án là tiền xử lý phải bảo toàn thể tích não gốc. Vì vậy cần hiểu sự khác nhau giữa căn chỉnh ảnh, resampling, scaling và biến dạng hình học; đồng thời biết cách kiểm tra xem pipeline có làm sai lệch thể tích mô não hay không.
+
+3. Đo thể tích và segmentation não
+
+Dự án cần đo hoặc kiểm tra thể tích để bảo đảm ảnh sau tiền xử lý và ảnh sinh ra vẫn hợp lý về mặt giải phẫu. Cần hiểu các khái niệm về segmentation mô não, thể tích chất xám, chất trắng, dịch não tủy, thể tích não thất và thể tích toàn não. Kiến thức này giúp đánh giá mô hình không chỉ bằng độ đẹp của ảnh mà còn bằng tính nhất quán giải phẫu.
+
+4. Machine Learning và Deep Learning cơ bản
+
+Cần nắm các khái niệm nền tảng như train/validation/test split, loss function, optimizer, overfitting, batch size, learning rate, normalization, data augmentation và đánh giá mô hình. Vì dữ liệu MRI có thể đến từ nhiều nguồn khác nhau, cần biết cách kiểm soát bias do nguồn dữ liệu, scanner hoặc phân bố tuổi không cân bằng.
+
+5. Generative AI và GAN
+
+Cần hiểu nguyên lý của Generative Adversarial Networks: generator tạo ảnh, discriminator phân biệt ảnh thật và ảnh sinh, hai thành phần được huấn luyện đối kháng. Ngoài ra cần biết các vấn đề thường gặp khi huấn luyện GAN như mode collapse, mất ổn định huấn luyện, hội tụ chậm và ảnh sinh bị mờ. Dự án yêu cầu GAN học phân phối ảnh MRI và tạo ra ảnh não thực tế.
+
+6. Latent space và feature learning
+
+Cần hiểu latent vector, latent space và cách mô hình học biểu diễn đặc trưng ẩn từ dữ liệu. Mục tiêu của dự án không chỉ là sinh ảnh, mà còn thao tác đặc trưng trong latent space. Thuộc tính tuổi cần được điều khiển có chủ đích, trong khi các đặc trưng giải phẫu khác nên được giữ ổn định. Đây là phần quan trọng để mô phỏng "same anatomy, different ages" như trong slide.
+
+7. Mô hình có điều kiện theo tuổi
+
+Cần biết cách đưa thông tin tuổi vào mô hình sinh, ví dụ dùng conditional GAN, embedding tuổi, hồi quy tuổi trong latent space hoặc học hướng thao tác tuổi trong latent vector. Cũng cần biết cách đánh giá xem thay đổi ảnh sinh ra có thật sự liên quan đến tuổi hay chỉ là nhiễu hoặc thay đổi hình học không mong muốn.
+
+8. Đánh giá chất lượng ảnh sinh
+
+Cần đánh giá cả chất lượng thị giác và tính đúng đắn giải phẫu. Các tiêu chí có thể gồm độ sắc nét, mức giống ảnh MRI thật, sự ổn định của cấu trúc não không liên quan đến tuổi, tính nhất quán của thay đổi theo tuổi và các chỉ số thể tích. Không nên chỉ dựa vào ảnh nhìn đẹp, vì ảnh MRI sinh ra có thể trông hợp lý nhưng sai về giải phẫu.
+
+9. Công cụ lập trình và thư viện
+
+Cần thành thạo Python và một framework deep learning như PyTorch hoặc TensorFlow. Ngoài ra nên biết các thư viện xử lý dữ liệu y sinh như nibabel, SimpleITK hoặc các công cụ liên quan đến neuroimaging. Các pipeline như FastSurfer/FreeSurfer hoặc các phương pháp segmentation hiện đại có thể hữu ích cho skull-stripping, segmentation và đo thể tích, tùy vào lựa chọn triển khai.
+
+10. Thiết kế thí nghiệm
+
+Cần biết cách tổ chức pipeline từ dữ liệu thô đến tiền xử lý, huấn luyện, thao tác latent và đánh giá. Nên lưu lại cấu hình tiền xử lý, phiên bản dữ liệu, tham số huấn luyện và seed để kết quả có thể tái lập. Cần có tập kiểm tra độc lập để đánh giá khả năng tổng quát hóa của mô hình, đặc biệt khi dữ liệu đến từ nhiều nguồn khác nhau.
+
+11. Đạo đức dữ liệu y tế
+
+Cần hiểu các nguyên tắc sử dụng dữ liệu y sinh: ẩn danh, tôn trọng giấy phép dữ liệu, không công bố thông tin định danh và không diễn giải mô hình như công cụ chẩn đoán. Ảnh MRI sinh ra trong dự án chỉ nên được dùng cho nghiên cứu, minh họa hoặc phân tích mô phỏng, không dùng trực tiếp để ra quyết định lâm sàng.

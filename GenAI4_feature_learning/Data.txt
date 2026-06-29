@@ -1,0 +1,107 @@
+DỮ LIỆU DỰ ÁN
+
+1. Khuyến nghị chọn nguồn dữ liệu
+
+Nguồn nên ưu tiên cho dự án là OpenBHB / Big Healthy Brains.
+
+Lý do: OpenBHB khớp nhất với yêu cầu trong theme_GenAI.pdf vì đây là tập dữ liệu MRI não T1 3D quy mô lớn, gồm 5330 ảnh từ người khỏe mạnh, tổng hợp từ 10 dataset công khai và 71 site chụp. Bộ dữ liệu có metadata quan trọng cho bài toán này như tuổi, giới tính, site, thông tin scanner, đồng thời có các chỉ số thể tích như Total Intracranial Volume, CSF volume, Gray Matter Volume và White Matter Volume. Đây là lựa chọn hợp lý nhất để học latent space liên quan đến tuổi và kiểm tra tác động của tiền xử lý bảo toàn thể tích.
+
+Nguồn chính đề xuất:
+
+- OpenBHB / Big Healthy Brains
+  URL: https://baobablab.github.io/bhb/dataset
+  Vai trò: nguồn chính cho huấn luyện và đánh giá.
+  Dữ liệu phù hợp: 3D T1 brain MRI, healthy controls, metadata tuổi/giới/site/scanner, các đặc trưng thể tích.
+  Lưu ý: nếu mục tiêu là "raw MRI" đúng nghĩa, cần kiểm tra điều kiện tải của từng dataset gốc trong OpenBHB. Nếu dùng bản OpenBHB đã tiền xử lý, nên ưu tiên nhánh Quasi-Raw thay vì VBM khi cần giữ hình ảnh gần dữ liệu gốc.
+
+2. Nguồn bổ sung nên cân nhắc
+
+- OASIS-3
+  URL: https://sites.wustl.edu/oasisbrains/
+  Vai trò: nguồn bổ sung rất tốt cho nghiên cứu lão hóa não, đặc biệt nếu muốn có người lớn tuổi, theo dõi dọc và thông tin lâm sàng.
+  Dữ liệu phù hợp: T1w, T2w, FLAIR và nhiều chuỗi MRI khác; có người bình thường nhận thức và người có suy giảm nhận thức/Alzheimer; tuổi khoảng 42-95.
+  Lưu ý: cần đăng ký, đồng ý điều khoản sử dụng dữ liệu và quản lý dữ liệu cẩn thận. Nếu mục tiêu là mô phỏng lão hóa bình thường, nên lọc nhóm cognitively normal để tránh GAN học nhầm dấu hiệu bệnh lý Alzheimer thành dấu hiệu tuổi.
+
+- IXI Dataset
+  URL: https://brain-development.org/ixi-dataset/
+  Vai trò: nguồn nhỏ hơn nhưng rất phù hợp để chạy thử pipeline tiền xử lý, trích xuất lát cắt 2D và kiểm thử model.
+  Dữ liệu phù hợp: gần 600 MRI từ người khỏe mạnh, có T1/T2/PD/MRA/DTI, định dạng NIfTI và thông tin demographic.
+  Lưu ý: không đủ lớn để làm nguồn chính cho GAN chất lượng cao, nhưng rất tiện cho prototype vì dữ liệu dễ hiểu và giấy phép CC BY-SA 3.0 rõ ràng.
+
+- Cam-CAN
+  URL: https://cam-can.mrc-cbu.cam.ac.uk/dataset/
+  Vai trò: nguồn bổ sung tốt cho nghiên cứu lão hóa khỏe mạnh ở người trưởng thành.
+  Dữ liệu phù hợp: dữ liệu neuroimaging, nhận thức và hành vi liên quan đến lão hóa.
+  Lưu ý: cần yêu cầu quyền truy cập qua data portal. Nên dùng làm tập đánh giá ngoài hoặc bổ sung nếu nhóm cần phân bố tuổi rộng hơn.
+
+3. Có nên dùng Kaggle không?
+
+Kaggle có thể dùng để demo nhanh, nhưng không nên là nguồn chính cho dự án này nếu mục tiêu là latent manipulation có kiểm soát tuổi và bảo toàn thể tích não.
+
+Các dataset Kaggle như "OASIS Alzheimer's Detection" thường là dữ liệu đã chuyển đổi từ MRI gốc sang JPG hoặc lát cắt 2D phục vụ phân loại Alzheimer. Chúng hữu ích để thử notebook, kiểm tra data loader hoặc làm demo thị giác, nhưng không lý tưởng cho dự án này vì:
+
+- Có thể thiếu metadata tuổi/site/scanner đầy đủ.
+- Dữ liệu thường đã bị chuyển đổi, cắt lát hoặc resize nên khó kiểm soát thể tích thật.
+- Nhãn bệnh Alzheimer có thể gây nhiễu khi mục tiêu là mô phỏng lão hóa bình thường.
+- Ảnh JPG/PNG không giữ đầy đủ affine, voxel spacing và thông tin y sinh như NIfTI.
+
+Các dataset Kaggle về brain tumor MRI không phù hợp cho dự án này vì có bệnh lý u não, không tập trung vào lão hóa khỏe mạnh và thường không có nhãn tuổi đủ tốt để thao tác latent space theo tuổi.
+
+Kết luận thực tế: dùng OpenBHB làm nguồn chính; dùng IXI để chạy thử pipeline; dùng OASIS-3 hoặc Cam-CAN để bổ sung/đánh giá ngoài; chỉ dùng Kaggle khi cần demo nhanh, không dùng làm kết quả chính.
+
+4. Loại dữ liệu cần lấy
+
+Dữ liệu chính nên là MRI não cấu trúc, ưu tiên T1-weighted 3D MRI ở định dạng NIfTI hoặc định dạng y sinh tương đương. Vì mô hình trong theme_GenAI.pdf được mô tả là 2D Brain MRI, dữ liệu 3D sau khi tải sẽ được tiền xử lý rồi trích xuất thành các lát cắt 2D để huấn luyện.
+
+Mỗi mẫu dữ liệu nên có tối thiểu:
+
+- Ảnh MRI não 3D, ưu tiên T1w.
+- Tuổi của đối tượng, vì tuổi là thuộc tính cần thao tác trong latent space.
+- Giới tính, site/scanner và thông tin acquisition nếu có.
+- Voxel spacing, affine/header và thông tin định hướng ảnh.
+- Mask não hoặc segmentation nếu có; nếu không có, cần tạo trong bước tiền xử lý.
+- Các chỉ số thể tích như TIV, GMV, WMV, CSFV nếu nguồn dữ liệu cung cấp hoặc có thể tính lại.
+
+5. Dữ liệu sau tiền xử lý
+
+Trước khi đưa vào GAN, dữ liệu cần đi qua quy trình tiền xử lý có bảo toàn thể tích não gốc. Các bước được nhắc trong theme_GenAI.pdf gồm conform, skull-stripping và alignment. Khi triển khai nên thêm kiểm tra chất lượng và ghi log đầy đủ.
+
+Pipeline đề xuất:
+
+- Kiểm tra dữ liệu thô: loại file lỗi, file thiếu metadata tuổi hoặc ảnh có artifact nặng.
+- Conform: chuẩn hóa định dạng và hướng ảnh, nhưng không scale não tùy tiện.
+- Skull-stripping: tách não khỏi hộp sọ và mô ngoài não.
+- Alignment: căn chỉnh về hệ tọa độ chung bằng phép biến đổi rigid/affine có kiểm soát.
+- Volume-preserving preprocessing: giữ thể tích não ban đầu, tránh biến dạng làm sai lệch GMV/WMV/TIV.
+- Trích xuất lát cắt 2D: lưu thêm vị trí lát cắt để model biết slice index hoặc vùng giải phẫu.
+- Chuẩn hóa cường độ ảnh: ví dụ z-score trong brain mask hoặc percentile clipping.
+- Kiểm tra thể tích trước/sau: so sánh TIV, GMV, WMV hoặc thể tích mask để phát hiện lỗi tiền xử lý.
+
+Điểm quan trọng là không resize hoặc warp ảnh theo cách làm thay đổi tỷ lệ giải phẫu thật. Nếu não bị co giãn sai, GAN sẽ học cả khác biệt kích thước đầu tuyệt đối thay vì học riêng thay đổi liên quan đến tuổi.
+
+6. Chia tập dữ liệu
+
+Nên chia train/validation/test theo subject, không chia ngẫu nhiên theo lát cắt. Nếu cùng một người có nhiều lát cắt xuất hiện ở cả train và test, kết quả đánh giá sẽ bị rò rỉ dữ liệu.
+
+Gợi ý chia:
+
+- Train: 70-80% subject.
+- Validation: 10-15% subject.
+- Test: 10-15% subject.
+- External test: nếu có, dùng IXI/OASIS/Cam-CAN khác nguồn với tập huấn luyện để kiểm tra khả năng tổng quát hóa.
+
+Khi chia tập cần cân bằng phân bố tuổi, giới tính và site nếu có thể. Với OpenBHB, cần đặc biệt chú ý site/scanner vì dữ liệu đến từ nhiều trung tâm khác nhau.
+
+7. Dữ liệu đánh giá
+
+Ngoài đánh giá chất lượng ảnh sinh, dự án cần đánh giá định lượng về giải phẫu. Các chỉ số nên lưu:
+
+- FID/KID hoặc metric tương tự cho chất lượng ảnh sinh.
+- MAE của age regressor trên ảnh sinh, nếu có mô hình dự đoán tuổi độc lập.
+- SSIM/L1 giữa ảnh gốc và ảnh tái tạo khi dùng encoder hoặc image-to-image model.
+- Thay đổi thể tích não thất, chất xám, chất trắng hoặc TIV theo hướng hợp lý khi tăng tuổi.
+- Mức ổn định của các đặc trưng không liên quan đến tuổi khi thao tác latent vector.
+
+8. Lưu ý đạo đức và pháp lý
+
+Dữ liệu MRI là dữ liệu y sinh nhạy cảm. Chỉ dùng dữ liệu đã được ẩn danh, được phép dùng cho nghiên cứu và tuân thủ giấy phép của từng nguồn. Không cố gắng tái định danh người tham gia, không công bố metadata nhạy cảm và không dùng ảnh sinh ra cho chẩn đoán lâm sàng. Dự án này nên được trình bày như một nghiên cứu mô phỏng và học biểu diễn đặc trưng, không phải công cụ y tế triển khai trực tiếp.

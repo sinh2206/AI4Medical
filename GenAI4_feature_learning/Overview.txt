@@ -1,0 +1,27 @@
+TỔNG QUAN DỰ ÁN
+
+Tên dự án: Generative AI for Feature Learning - Latent Manipulation of 2D Brain MRI using Volume-Preserving GANs
+
+1. Bối cảnh
+
+Dự án tập trung vào việc sử dụng mô hình sinh, cụ thể là GAN, để học biểu diễn đặc trưng từ ảnh MRI não 2D và mô phỏng sự thay đổi cấu trúc não theo tuổi. Theo nội dung trong theme_GenAI.pdf, quá trình lão hóa não thường liên quan đến các thay đổi giải phẫu như mỏng vỏ não và giãn não thất. GAN có khả năng học phân phối dữ liệu ảnh MRI và sinh ra ảnh mới có hình thái tương tự dữ liệu thật, từ đó hỗ trợ khảo sát các biến đổi liên quan đến tuổi trong không gian tiềm ẩn.
+
+2. Mục tiêu dự án
+
+Mục tiêu chính là phát triển một mô hình GAN có khả năng thao tác latent space để mô phỏng các thay đổi MRI não liên quan đến tuổi. Khi thay đổi thuộc tính tuổi trong latent vector, mô hình cần giữ ổn định các đặc trưng giải phẫu khác của cùng một cá thể, nhằm cô lập tác động của lão hóa thay vì trộn lẫn với khác biệt về kích thước đầu, tư thế chụp hoặc sai lệch do tiền xử lý.
+
+3. Vấn đề cần giải quyết
+
+Một rủi ro quan trọng của bài toán là bước tiền xử lý có thể làm thay đổi tỷ lệ não hoặc thể tích mô não. Slide minh họa hiện tượng "wrong brain scale" so với "good brain scale", trong đó thể tích chất xám có thể bị sai lệch đáng kể nếu quy trình tiền xử lý không bảo toàn thể tích gốc. Khi dữ liệu đầu vào có khác biệt lớn về tỷ lệ không gian, GAN phải học đồng thời cả đặc trưng giải phẫu và khác biệt kích thước đầu tuyệt đối. Điều này làm tăng phương sai dữ liệu, khiến mô hình hội tụ chậm hơn và có thể tạo ra ảnh mờ do các cấu trúc não không chồng khớp tốt giữa các mẫu.
+
+4. Hướng tiếp cận
+
+Quy trình dự án gồm ba phần chính. Thứ nhất là tiền xử lý MRI thô với các bước như conform, skull-stripping, alignment và các thao tác chuẩn hóa cần thiết, nhưng phải bảo toàn thể tích não ban đầu. Thứ hai là huấn luyện GAN trên dữ liệu MRI đã tiền xử lý để học latent space có nhận thức về tuổi. Thứ ba là thao tác latent vector theo thuộc tính tuổi để tạo các phiên bản ảnh của cùng một cấu trúc giải phẫu ở những độ tuổi khác nhau.
+
+5. Đầu ra kỳ vọng
+
+Đầu ra của dự án là mô hình GAN có thể sinh ảnh MRI não 2D thực tế, đồng thời cho phép điều khiển yếu tố tuổi trong latent space. Kết quả mong muốn là cùng một mẫu giải phẫu có thể được mô phỏng ở các mức tuổi khác nhau, thể hiện hợp lý các thay đổi như mỏng vỏ não hoặc giãn não thất, trong khi các đặc điểm giải phẫu không liên quan đến tuổi được giữ ổn định. Ngoài ảnh sinh ra, dự án cũng cần đánh giá bằng các phép đo thể tích để kiểm tra tính hợp lý giải phẫu của kết quả.
+
+6. Ý nghĩa
+
+Dự án giúp minh họa cách Generative AI có thể được dùng cho feature learning trong ảnh y sinh, đặc biệt là học biểu diễn tiềm ẩn có thể điều khiển được. Nếu được triển khai tốt, mô hình có thể hỗ trợ nghiên cứu sự lão hóa não, tăng cường dữ liệu, trực quan hóa biến đổi giải phẫu theo tuổi và phân tích các đặc trưng hình thái học trong MRI. Dự án mang tính nghiên cứu và mô phỏng, không được xem là hệ thống chẩn đoán lâm sàng.
